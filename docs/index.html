@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Scientific Color Tool</title>
+  <style>
+    .inputlabel {
+      font-size: 20px;
+    }
+
+    .color {
+      display: inline-block;
+      padding: 20px 10px 0 20px;
+    }
+
+    .colorname {
+      font-size: 1.4em;
+      line-height: 2em;
+    }
+
+    .shadepreview {
+      display: inline-block;
+      height: 20px;
+      width: 20px;
+    }
+
+    input {
+      height: 30px;
+      width: 100px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <span class="inputlabel">Background:</span>
+  <input id="input" placeholder="#abcdef" value="#ffffff"></input>
+  <div id="palette"></div>
+
+  <script>
+
+    const palette = {
+      "red": {
+        "200": "#F7E1DF",
+        "300": "#EBB0AE",
+        "400": "#DE817C",
+        "500": "#CE5B54",
+        "600": "#BD4840",
+        "700": "#992C26",
+        "800": "#781E19"
+      },
+      "orange": {
+        "200": "#FBECDA",
+        "300": "#F5D0A3",
+        "400": "#ECA349",
+        "500": "#D28628",
+        "600": "#B96E12",
+        "700": "#945810",
+        "800": "#6E430D"
+      },
+      "yellow": {
+        "200": "#F9FDAF",
+        "300": "#E9ED72",
+        "400": "#D1DB09",
+        "500": "#BDC705",
+        "600": "#AAB206",
+        "700": "#848B05",
+        "800": "#4C5002"
+      },
+      "green": {
+        "200": "#C9F5DE",
+        "300": "#9AE3BE",
+        "400": "#4BC887",
+        "500": "#2AB76E",
+        "600": "#219459",
+        "700": "#1B7647",
+        "800": "#125030"
+      },
+      "cyan": {
+        "200": "#C4F5F1",
+        "300": "#7FEDE2",
+        "400": "#02BCA9",
+        "500": "#00AB9A",
+        "600": "#008F81",
+        "700": "#00695E",
+        "800": "#00473F"
+      },
+      "blue": {
+        "200": "#C0EAF6",
+        "300": "#9DD8EE",
+        "400": "#58B7DA",
+        "500": "#2B9FC9",
+        "600": "#0D7AA2",
+        "700": "#085C7B",
+        "800": "#04445B"
+      },
+      "purple": {
+        "200": "#DFE1F5",
+        "300": "#BBBEDD",
+        "400": "#A3A8D9",
+        "500": "#7C83BF",
+        "600": "#6269AF",
+        "700": "#434A89",
+        "800": "#2E3460"
+      },
+      "pink": {
+        "200": "#F2DFEA",
+        "300": "#E5B6D1",
+        "400": "#D184B0",
+        "500": "#C46A9D",
+        "600": "#BF5290",
+        "700": "#A83877",
+        "800": "#8D1F5D"
+      },
+      "gray": {
+        "200": "#F5F7FA",
+        "250": "#E6ECF2",
+        "300": "#C1D3E6",
+        "350": "#A3BED9",
+        "400": "#85ABCC",
+        "450": "#5D8DB3",
+        "500": "#367099",
+        "550": "#1E5780",
+        "600": "#1B4F75",
+        "650": "#17476A",
+        "700": "#133F60",
+        "750": "#103955",
+        "800": "#0D314A",
+        "850": "#0A2433",
+        "000": "#FFFFFF",
+        "999": "#000000"
+      }
+    };
+
+    // ---------- TEMPLATE ----------
+
+    const colorEntryTemplate = (shade, value) => `
+      <div class="shade">
+        <div class="shadepreview" style="background-color: ${value}"></div>
+        <span class="shadename">${shade} - ${value}</span>
+      </div>
+    `;
+
+    const paletteTemplate = (color, shades) => `
+      <div class="color">
+        <div class="colorname">${color}:</div>
+        ${Object.entries(shades).map(([shade, value]) => colorEntryTemplate(shade, value)).join('')}
+      </div>
+    `;
+
+    const innerHTML = Object.entries(palette).map(([color, shades]) => paletteTemplate(color, shades)).join('');
+
+    document.getElementById('palette').innerHTML = innerHTML;
+
+    // ---------- INTERACTION ----------
+
+    const getRgbPart = (value, offset) => parseInt(value.slice(offset, offset + 2), 16);
+    const isValid = (value) => /#[0-9a-f]{6}/i.test(value);
+    const isDark = (value) => (getRgbPart(value, 1) + getRgbPart(value, 3) + getRgbPart(value, 5)) / 3 < 256 / 2;
+
+    const applyColor = () => {
+      const value = document.getElementById('input').value;
+      const body = document.querySelector('body');
+      if (!isValid(value)) return;
+      body.style.backgroundColor = value;
+      body.style.color = isDark(value) ? '#ffffff' : '#000000';
+    }
+
+    const input = document.getElementById('input');
+    input.addEventListener('input', applyColor);
+    input.focus();
+    input.setSelectionRange(input.value.length, input.value.length);
+
+  </script>
+</body>
+</html>
